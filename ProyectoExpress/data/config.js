@@ -1,11 +1,22 @@
-const mysql = require('mysql');
+const sql = require ('mssql');
 
 const config = {
-    host: 'localhost',
     user: 'root',
-    password: 'admin',
+    password: 'root',
+    server: 'localhost',
     database: 'api',
-};
-
-const pool = mysql.createPool(config);
-module.exports = pool;
+    port: 1433,
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
+      },
+    options: {
+        trustedconnection: false,
+        enableArithAbort: true,
+        encrypt:false,
+        instancename: 'WINSERVERFLORES\\SQLEXPRESS01',
+        trustServerCertificate: false,
+    }
+}
+module.exports = config;

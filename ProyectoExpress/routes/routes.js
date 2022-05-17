@@ -14,9 +14,9 @@ const router = app => {
         mssql.connect(config, function(err){
             if(err) console.log(err);
             var request = new mssql.Request();
-            request.query('select * from users', function (err, results){
+            request.query('select * from users', function (err, recordset){
                 if(err) console.log(err)
-                response.send(results);
+                response.send(recordset);
             });
         });
     });
@@ -35,12 +35,16 @@ const router = app => {
     //Agregar un nuevo usuario
     app.post('/users', (request, response) => {
         mssql.connect(config, function(err){
-            const id = request.params.id;
             if(err) console.log(err);
             var req = new mssql.Request();
-            req.query("INSERT INTO users SET ?",request.body, function (err, results){
+            const id = request.body.id;
+            const nombre = request.body[0].nombre;
+            const apellido = request.body[0].apellido;
+            console.log(id+nombre+apellido);
+            req.query("insert into users(nombre, apellido) values("+"'"+nombre+"','"+apellido+
+            "')", function (err, results){
                 if(err) console.log(err)
-                renspose.status(201).send(`User added with ID: ${result.insertID}`);
+                response.status(201).send(`User added with ID: ${id}`);
             });
         });
     });
@@ -48,15 +52,18 @@ const router = app => {
     app.put('/users/:id', (request, response) => {
         mssql.connect(config, function(err){
             const id = request.params.id;
+            const nombre = request.body.nombre;
+            const apellido = request.body.apellido;
             if(err) console.log(err);
             var req = new mssql.Request();
-            req.query("INSERT INTO users SET ? WHERE Id = "+id, [request.body, id], function (err, results){
+            req.query("update users set nombre = "+"'"+nombre+"', apellido = "+"'"+apellido+
+            "'"+"WHERE id = "+id, function (err, results){
                 if(err) console.log(err)
                 response.send('User updated succesfully');
             });
         });
     });
-    //Eliminar un usuario
+//Eliminar un usuario
     app.delete('/users/:id', (request, response) => {
         mssql.connect(config, function(err){
             const id = request.params.id;
@@ -69,6 +76,5 @@ const router = app => {
         });
     });
 }
-
 //importar el router
 module.exports = router;
